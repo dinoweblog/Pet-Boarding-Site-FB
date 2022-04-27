@@ -16,7 +16,6 @@
 - `Home Page`: Nav Bar with menu, and shows all features and details.
 - `Sign-Up`: Users [admin & customer] details stored to server.
 - `Sign-In`: Users authentication to check whether user phone number and password match with details existing in the database.
-- `Sign-In`: User authentication to check whether user type and all data.
 - `Additional Features`: All the functionalities like sorting, filtering, searching, and pagination have been added to the frontend via the backend.
 
 ----
