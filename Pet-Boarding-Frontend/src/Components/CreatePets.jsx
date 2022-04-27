@@ -88,8 +88,8 @@ export const CreatePets = () => {
     })
       .then((res) => res.json())
       .then((res) => {
-        dispatch(usersPetsSuccessFun(res));
         navigate("/users/successfull");
+        dispatch(usersPetsSuccessFun(res));
       })
       .catch((error) => dispatch(usersPetsErrorFun()));
   };
