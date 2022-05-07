@@ -37,13 +37,14 @@
 
 - **Home Page For Admin User**
 ---
-![admin interface](https://user-images.githubusercontent.com/93374756/165640412-9f2029ea-80fb-4dd8-8ff2-c92ff78e9504.png)
+![admin](https://user-images.githubusercontent.com/93374756/167250618-a58b248b-0fdf-4b6b-aa23-8197845e2798.png)
+
 
 ---
 - **Home Page For Customer User**
 ---
- 
-![user interface](https://user-images.githubusercontent.com/93374756/165640467-d76159ca-51ef-487b-a44b-d329ce2b3ce0.png)
+ ![user](https://user-images.githubusercontent.com/93374756/167250624-5095f8ed-c339-4f0f-a4a8-764317f092ad.png)
+
 
 ---
 - **Sign-Up Sign-In Page**
