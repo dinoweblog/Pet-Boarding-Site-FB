@@ -7,7 +7,7 @@
 ---
 
 ## About this project: 🙌
-> This is a solo project. It is a react and redux pet boarding booking website. A full-stack website developed on its own in 2 days. We added features like login and signup for both users [admin, customer], filter &amp; sort according to price, &amp; End to End Flow, etc.
+> This is a solo project. It is a react and redux pet boarding booking website. A full-stack website developed on its own in 2 days. I added features like login and signup for both users [admin, customer], filter &amp; sort according to price, &amp; End to End Flow, etc.
 
 ---
 
