@@ -21,12 +21,14 @@
 ----
 
 ### Tech Stack Used 🔧
-- `React`
+#### Frontend
+- `Reactjs`
 - `Redux`
+- `Redux-Thunk`
 - `CSS`
-- `JavaScript`
-- `Express`
+#### Backend
 - `Mongodb`
+- `Express`
 - `Mongoose`
 
 ---
