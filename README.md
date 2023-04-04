@@ -64,7 +64,8 @@
 
 - **Admin Dashboard**
 ---
-![approval](https://user-images.githubusercontent.com/93374756/165639746-44406ccd-4215-4758-a40a-08a6bcb68334.png)
+![dashboard](https://user-images.githubusercontent.com/93374756/229695735-9bfbcbe7-fae6-48ee-aba1-3447795a66b4.png)
+
 
 
 ---
