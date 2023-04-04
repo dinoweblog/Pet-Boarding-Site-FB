@@ -27,9 +27,16 @@
 - `Redux-Thunk`
 - `CSS`
 #### Backend
+- `Node.js`
 - `Mongodb`
 - `Express`
 - `Mongoose`
+
+---
+
+#### Instruction
+- `npm start` - Frontend
+- `npm run dev` or `npm start` - Backend
 
 ---
 
