@@ -16,8 +16,8 @@ export const petsReducer = (store = initState, { type, payload }) => {
         ...store,
         loading: false,
         error: false,
-        pets: [...payload.pets],
         totalPages: payload.totalPages,
+        pets: [...payload.pets],
       };
     case PETS_DELETE:
       return {

@@ -9,7 +9,11 @@ const newToken = (user) => {
 
 const register = async (req, res) => {
   try {
-    let user = await User.findOne({ email: req.body.email }).lean().exec();
+    const { email, name, password } = req.body;
+    if (!email || !name || !password)
+      return res.status(400).send({ message: "All fields are required" });
+
+    let user = await User.findOne({ email: email }).lean().exec();
 
     if (user)
       return res
@@ -28,6 +32,10 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
+    const { email, password } = req.body;
+    if (!email || !password)
+      return res.status(400).send({ message: "Enter email and password" });
+
     let user = await User.findOne({ email: req.body.email });
 
     if (!user)

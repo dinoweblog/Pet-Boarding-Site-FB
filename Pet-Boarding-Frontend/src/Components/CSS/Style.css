@@ -1,0 +1,85 @@
+.dog_img {
+  position: absolute;
+  top: 12%;
+  right: 15%;
+  transform: scaleX(-1);
+}
+.dog_img img {
+  width: 50%;
+}
+
+.clear_all_btn{
+    color: red;
+    margin-left: 20px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.top-text {
+  width: 40%;
+  margin: auto;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #01d6af;
+}
+
+@media (max-width: 996px) {
+  .table > div {
+    overflow-x: auto;
+  }
+
+  .search_box {
+    grid-area: searchBox;
+  }
+
+  .filter {
+    grid-area: filter;
+  }
+
+  .sort {
+    grid-area: sort;
+  }
+
+  #content_container .filter_sort {
+    display: grid;
+    gap: 0;
+    justify-content: space-between;
+    grid:
+      "searchBox searchBox searchBox searchBox searchBox searchBox"
+      "filter filter sort sort  sort sort";
+  }
+
+  .filter > div,
+  .sort > div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .dog_img img {
+      width: 45%;
+  }
+}
+
+@media (max-width: 700px) {
+  #content_container .filter_sort {
+    display: grid;
+    gap: 0;
+    justify-content: space-between;
+    grid:
+      "searchBox searchBox searchBox searchBox "
+      "filter sort sort sort ";
+  }
+
+  .filter {
+    width: 70%;
+  }
+
+  
+  .dog_img img {
+    width: 35%;
+  }
+
+  .top-text {
+    width: 60%;
+  }
+}

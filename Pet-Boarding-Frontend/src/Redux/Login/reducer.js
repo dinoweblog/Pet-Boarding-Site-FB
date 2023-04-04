@@ -11,9 +11,9 @@ const initState = {
   isAuthenticated: "false",
   token: "",
   error: false,
-  roles: [],
+  roles: null,
   user: {},
-  userId: ""
+  userId: "",
 };
 
 const loginReducer = (store = initState, { type, payload }) => {
@@ -27,7 +27,7 @@ const loginReducer = (store = initState, { type, payload }) => {
         loading: false,
         isAuthenticated: "true",
         token: payload.token,
-        roles: [...payload.roles],
+        roles: payload.roles,
         user: { ...payload.user },
         userId: payload.userId,
       };
@@ -51,7 +51,7 @@ const loginReducer = (store = initState, { type, payload }) => {
         isAuthenticated: "false",
         token: "",
         error: false,
-        roles: [],
+        roles: null,
         user: null,
       };
     default:

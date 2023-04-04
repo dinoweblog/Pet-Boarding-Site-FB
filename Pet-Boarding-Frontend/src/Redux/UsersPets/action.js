@@ -1,3 +1,5 @@
+import { API_URL } from "../../api";
+
 export const USERS_PETS_LOADING = "USERS_PETS_LOADING";
 export const USERS_PETS_SUCCESS = "USERS_PETS_SUCCESS";
 export const USERS_PETS_BOOKING = "USERS_PETS_BOOKING";
@@ -23,7 +25,7 @@ export const usersPetsErrorFun = () => ({
 
 export const getUsersPetsData = (id) => (dispatch) => {
   dispatch(usersPetsLoadingFun());
-  fetch(`https://pet-boarding-server.herokuapp.com/pets/all/${id}`)
+  fetch(`${API_URL}/pets/all/${id}`)
     .then((res) => res.json())
     .then((res) => {
       dispatch(usersPetsSuccessFun(res));
@@ -33,7 +35,7 @@ export const getUsersPetsData = (id) => (dispatch) => {
 
 export const allGetUsersPetsData = () => (dispatch) => {
   dispatch(usersPetsLoadingFun());
-  fetch(`https://pet-boarding-server.herokuapp.com/pets/all`)
+  fetch(`${API_URL}/pets/all`)
     .then((res) => res.json())
     .then((res) => {
       dispatch(allUsersPetsBooking(res));

@@ -8,16 +8,18 @@ import {
   getPetsData,
   petsErrorFun,
   petsLoadingFun,
-  petsSuccessFun,
 } from "../Redux/Pets/action";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { API_URL } from "../api";
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from "../notification/Notification";
 
 const Form = styled.form`
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 20px;
-  box-sizing: border-box;
 
   input,
   select {
@@ -55,63 +57,87 @@ const Form = styled.form`
   }
 `;
 
-const Modal2 = ({ setIsOpen2, id }) => {
-  const [one, setOne] = useState([]);
-  const [name, setName] = useState(one.name);
-  const [city, setCity] = useState(one.city);
-  const [address, setAddress] = useState(one.address);
-  const [capacity, setCapacity] = useState(one.capacity);
-  const [cost_per_day, setCostPerCity] = useState(one.cost_per_day);
-  const [verified, setVerified] = useState(one.verified);
-  const [rating, setRating] = useState(one.rating);
-
+const Modal2 = ({ setIsOpen2, id, page }) => {
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    city: "",
+    address: "",
+    capacity: "",
+    cost_per_day: "",
+    verified: "",
+    rating: "",
+  });
   const { token } = useSelector((state) => state.login);
-  const { pets } = useSelector((state) => state.pets);
-
+  const [pet, setPet] = useState({});
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const getSingle = () => {
-    const pet = pets.filter((e) => e._id == id);
-    setOne([...pet]);
-  };
 
   useEffect(() => {
-    getSingle();
-  }, []);
+    setFormData({
+      name: pet?.name,
+      city: pet?.city,
+      address: pet?.address,
+      capacity: pet?.capacity,
+      cost_per_day: pet?.cost_per_day,
+      verified: pet?.verified,
+      rating: pet?.rating,
+    });
+  }, [pet]);
 
-  const dataDetails = {
-    name: name,
-    city: city,
-    address: address,
-    capacity: capacity,
-    cost_per_day: cost_per_day,
-    verified: verified,
-    rating: rating,
-  };
+  useEffect(() => {
+    findData();
+  }, [id]);
 
   const handleForm = (e) => {
     e.preventDefault();
 
     dispatch(petsLoadingFun());
-    fetch(`https://pet-boarding-server.herokuapp.com/listing/update/${id}`, {
+    setLoading(true);
+    fetch(`${API_URL}/listing/update/${id}`, {
       method: "PATCH",
-      body: JSON.stringify(dataDetails),
+      body: JSON.stringify(formData),
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token,
       },
     })
       .then((res) => res.json())
+      .then(() => {
+        setLoading(false);
+        dispatch(getPetsData(page));
+        setIsOpen2(false);
+        showSuccessNotification("Successfully Updated");
+      })
+      .catch((error) => {
+        setLoading(false);
+        dispatch(petsErrorFun());
+        showErrorNotification(error.message);
+        console.log(error);
+      });
+  };
 
-      .catch((error) => dispatch(petsErrorFun()));
+  const findData = () => {
+    fetch(`${API_URL}/listing/${id}`)
+      .then((res) => res.json())
+      .then((res) => {
+        setPet({ ...res.pet });
+      })
+      .catch((error) => console.log(error));
+  };
 
-    navigate("/");
+  const handleChange = (e) => {
+    e.preventDefault();
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
     <>
-      <div className={styles.darkBG} onClick={() => setIsOpen2(false)} />
+      <div
+        style={{ position: "absolute", top: 0 }}
+        className={styles.darkBG}
+        onClick={() => setIsOpen2(false)}
+      />
       <div className={styles.centered}>
         <div className={styles.modal2}>
           <div className={styles.modalHeader}>
@@ -122,62 +148,41 @@ const Modal2 = ({ setIsOpen2, id }) => {
           </button>
           <div className={styles.modalContent}>
             <Form
-              onSubmit={(e) => {
-                handleForm(e);
-              }}
+              onSubmit={handleForm}
+              onChange={handleChange}
+              className="form"
             >
               <input
                 type="text"
                 placeholder="Name"
-                name=""
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                }}
+                name="name"
+                value={formData.name}
               />
               <input
                 type="text"
                 placeholder="City"
-                name="City"
-                value={city}
-                onChange={(e) => {
-                  setCity(e.target.value);
-                }}
+                name="city"
+                value={formData.city}
               />
               <input
                 type="text"
                 placeholder="Address"
-                name=""
-                value={address}
-                onChange={(e) => {
-                  setAddress(e.target.value);
-                }}
+                name="address"
+                value={formData.address}
               />
               <input
                 type="number"
                 placeholder="Capacity"
-                name=""
-                value={capacity}
-                onChange={(e) => {
-                  setCapacity(e.target.value);
-                }}
+                name="capacity"
+                value={formData.capacity}
               />
               <input
                 type="number"
                 placeholder="Cost per day"
-                name=""
-                value={cost_per_day}
-                onChange={(e) => {
-                  setCostPerCity(e.target.value);
-                }}
+                name="cost_per_day"
+                value={formData.cost_per_day}
               />
-              <select
-                name=""
-                id=""
-                onChange={(e) => {
-                  setVerified(e.target.value);
-                }}
-              >
+              <select name="verified">
                 <option value="">Verified</option>
                 <option value="yes">yes</option>
                 <option value="no">no</option>
@@ -186,13 +191,13 @@ const Modal2 = ({ setIsOpen2, id }) => {
               <input
                 type="number"
                 placeholder="Rating"
-                name=""
-                value={rating}
-                onChange={(e) => {
-                  setRating(e.target.value);
-                }}
+                name="rating"
+                value={formData.rating}
               />
-              <input type="submit" />
+              <input
+                type="submit"
+                value={loading ? `Submiting...` : `Submit`}
+              />
               <button onClick={() => setIsOpen2(false)}>Cancel</button>
             </Form>
           </div>

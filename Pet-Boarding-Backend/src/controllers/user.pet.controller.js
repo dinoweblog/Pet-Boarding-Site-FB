@@ -10,7 +10,10 @@ const router = express.Router();
 router.get("/all/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const pets = await AllPets.find({ user_id: id }).lean().exec();
+    const pets = await AllPets.find({ user_id: id })
+      .sort({ updatedAt: -1 })
+      .lean()
+      .exec();
 
     return res.send(pets);
   } catch (err) {
@@ -20,7 +23,7 @@ router.get("/all/:id", async (req, res) => {
 
 router.get("/all", async (req, res) => {
   try {
-    const pets = await AllPets.find().lean().exec();
+    const pets = await AllPets.find().sort({ updatedAt: -1 }).lean().exec();
 
     return res.send(pets);
   } catch (err) {
@@ -31,7 +34,7 @@ router.get("/all", async (req, res) => {
 router.post(
   "/create",
   authenticate,
-  authorise(["admin", "users"]),
+  authorise(["admin", "user"]),
   async (req, res) => {
     try {
       const pet = await AllPets.create(req.body);
@@ -46,7 +49,7 @@ router.post(
 router.get(
   "/:id",
   authenticate,
-  authorise(["admin", "users"]),
+  authorise(["admin", "user"]),
   async (req, res) => {
     try {
       const id = req.params.id;

@@ -2,7 +2,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { getLogout } from "../Redux/Login/action";
-import logo from "../images/logo.png";
 
 const Div = styled.div`
   padding: 8px 10%;
@@ -47,23 +46,22 @@ const Div = styled.div`
   }
 `;
 export const Navbar = () => {
-  const { token, isAuthenticated, roles } = useSelector((state) => state.login);
+  const { roles } = useSelector((state) => state.login);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  if (roles[0] === "admin")
-    return (
-      <Div>
-        <div
-          className="logo"
-          onClick={() => {
-            navigate("/");
-          }}
-        >
-          <img src={logo} alt="" />
-          <h3>PetCare</h3>
-        </div>
-        {/* <Link to={"/"}>Home</Link> */}
+  return (
+    <Div>
+      <div
+        className="logo"
+        onClick={() => {
+          navigate("/");
+        }}
+      >
+        <img style={{ width: "30px" }} src="./logo.png" alt="" />
+        <h3>PetCare</h3>
+      </div>
+      {roles === "admin" ? (
         <div className="menu">
           <Link to={"/users/dashboard"}>
             <i className="bx bxs-dashboard"></i> Dashboard
@@ -79,21 +77,7 @@ export const Navbar = () => {
             Logout
           </Link>
         </div>
-      </Div>
-    );
-  else if (roles[0] === "users")
-    return (
-      <Div>
-        <div
-          className="logo"
-          onClick={() => {
-            navigate("/");
-          }}
-        >
-          <img src={logo} alt="" />
-          <h3>PetCare</h3>
-        </div>
-        {/* <Link to={"/"}>Home</Link> */}
+      ) : roles === "user" ? (
         <div className="menu">
           <Link to={"/users/booking"}>
             <i className="bx bxs-bookmarks"></i> Your Booking
@@ -109,25 +93,12 @@ export const Navbar = () => {
             Logout
           </Link>
         </div>
-      </Div>
-    );
-  else
-    return (
-      <Div>
-        <div
-          className="logo"
-          onClick={() => {
-            navigate("/");
-          }}
-        >
-          <img src={logo} alt="" />
-          <h3>PetCare</h3>
-        </div>
-        {/* <Link to={"/"}>Home</Link> */}
+      ) : (
         <div className="menu">
           <Link to={"/login"}>Login</Link>
           <Link to={"/signup"}>Signup</Link>
         </div>
-      </Div>
-    );
+      )}
+    </Div>
+  );
 };

@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { Navbar } from "./Navbar";
-import { Footer } from "./Footer";
 import { getUsersPetsData } from "../Redux/UsersPets/action";
 import { TableRowUser } from "./TableRowUser";
 
@@ -156,14 +154,12 @@ export const Booking = () => {
 
   return (
     <Container>
-      <Navbar />
       <Div>
         <div className="profile">
           <h3>
             Welcome <span>{user.name}</span>{" "}
           </h3>
-          <p>Email : {user.email}</p>
-          <p>Mobile : {user.mobile}</p>
+          <p>Email : {user?.email}</p>
         </div>
 
         <h1>Your Booking</h1>
@@ -203,7 +199,6 @@ export const Booking = () => {
           </tbody>
         </table>
       </Div>
-      <Footer />
     </Container>
   );
 };

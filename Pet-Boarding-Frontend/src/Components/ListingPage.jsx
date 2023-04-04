@@ -2,15 +2,14 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
+import { API_URL } from "../api";
 import { loginAuthenticated } from "../Redux/Login/action";
-import { Footer } from "./Footer";
-import { Navbar } from "./Navbar";
 
 const Div = styled.div`
   .background {
     width: 100%;
     height: 400px;
-    background-image: url(https://thumbs.dreamstime.com/b/group-cats-dogs-front-white-background-33442671.jpg);
+    background-image: url(https://www.felican.in/img/topbanner.jpg);
     background-size: cover;
     background-repeat: no-repeat;
   }
@@ -67,7 +66,7 @@ export const ListingPage = () => {
     findData();
   }, []);
   const findData = () => {
-    fetch(`https://pet-boarding-server.herokuapp.com/listing/${id}`)
+    fetch(`${API_URL}/listing/${id}`)
       .then((res) => res.json())
       .then((res) => {
         setData({ ...res.pet });
@@ -81,7 +80,6 @@ export const ListingPage = () => {
 
   return (
     <Div>
-      <Navbar />
       <div className="background"></div>
       <div className="items">
         <div className="details">
@@ -118,7 +116,6 @@ export const ListingPage = () => {
           <button onClick={handleBook}>Book Now</button>
         </div>
       </div>
-      <Footer />
     </Div>
   );
 };

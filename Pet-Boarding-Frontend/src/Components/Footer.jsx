@@ -4,7 +4,6 @@ const Div = styled.div`
   padding: 10px 10%;
   background-color: black;
   color: #b4b4b4;
-  margin-top: 40px;
   display: flex;
   align-items: center;
   gap: 50px;

@@ -1,31 +1,17 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getPetsData } from "../Redux/Pets/action";
+import { getPetsData, petsSuccessFun } from "../Redux/Pets/action";
 import { TableRow } from "./TableRow";
 import styled from "styled-components";
-import { Navbar } from "./Navbar";
-import { Footer } from "./Footer";
-import loading_gif from "../images/loading-gif.png";
-import logo from "../images/logo.png";
+import "./CSS/Style.css";
+import { API_URL } from "../api";
+import { Box } from "@mui/material";
+import Modal from "./Modal";
+import Modal2 from "./Modal2";
 
 const Container = styled.div`
   width: 100%;
-  .top-text {
-    width: 40%;
-    margin: auto;
-    margin-bottom: 30px;
-    text-align: center;
-    color: #01d6af;
-  }
-  .dog_img {
-    position: absolute;
-    top: 12%;
-    right: 15%;
-    transform: scaleX(-1);
-    img {
-      width: 50%;
-    }
-  }
+
   .quote {
     width: 80%;
     margin: auto;
@@ -36,21 +22,12 @@ const Container = styled.div`
     box-sizing: border-box;
     .quote_icon {
       font-size: 40px;
-      /* position: absolute; */
     }
     .bxs-quote-right {
       margin-top: 10px;
       position: absolute;
     }
   }
-`;
-
-const MainDiv = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
 `;
 
 const Div = styled.div`
@@ -63,6 +40,9 @@ const Div = styled.div`
   flex-direction: column;
   justify-content: center;
 
+  .table_container {
+    overflow-x: auto;
+  }
   .pagination {
     margin: auto;
     margin-top: 30px;
@@ -73,33 +53,56 @@ const Div = styled.div`
       padding: 8px 16px;
       text-decoration: none;
       transition: background-color 0.4s;
-      border: 1px solid #ddd;
+      border: 1px solid #c4c4c4;
       font-size: 15px;
+    }
+
+    .active {
+      background-color: #ab46d2;
+      border: 1px solid #ab46d2;
+      pointer-events: none;
+      color: white;
+    }
+    .nextPrevBtn {
+      pointer-events: none;
+      opacity: 0.7;
     }
   }
 
-  table {
+  .table {
     border-collapse: collapse;
     text-align: left;
-
-    tbody {
+    min-width: 700px;
+    white-space: nowrap;
+    .tbody {
       height: 315px;
     }
-    thead {
+    .thead {
+      display: flex;
       border-bottom: 1px solid #dddddd;
       border-top: 1px solid #dddddd;
-      tr {
-        color: #ab46d2;
-      }
+      color: #ab46d2;
+      font-weight: bold;
     }
-    th,
-    td {
-      padding: 20px;
+    .row {
+      display: flex;
+      width: 95%;
+      justify-content: space-between;
     }
-    tr {
+    .th,
+    .td {
+      padding: 20px 0;
+      width: calc(100vh / 7);
+    }
+    .sn {
+      width: 30px;
+    }
+    .row {
       /* height: 63px; */
       box-sizing: border-box;
-      border-bottom: 1px solid #dddddd;
+    }
+    .main-head {
+      border-bottom: 0px solid #dddddd;
     }
   }
 
@@ -172,6 +175,7 @@ const Div = styled.div`
 
   .loading_img {
     width: 100px;
+    margin-top: 8%;
     img {
       width: 100%;
     }
@@ -182,6 +186,9 @@ const Div = styled.div`
     display: flex;
 
     gap: 20px;
+    padding: 20px 0;
+    box-sizing: border-box;
+    border-bottom: 1px solid #dddddd;
   }
   .icons i {
     padding: 0;
@@ -202,12 +209,14 @@ export const Home = () => {
   const [verify, setVerify] = useState("yes");
   const [costCheck, setCostCheck] = useState(true);
   const [page, setPage] = useState(1);
-  const [size, setSize] = useState(5);
-  const [height, setHeight] = useState(315);
   const [ratingCheck, setRatingCheck] = useState(true);
   const [alpha, setAlpha] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [isActive, setActive] = useState({ isVisible: false });
+  const [clearShow, setClearShow] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen2, setIsOpen2] = useState(false);
+  const [itemId, setItenId] = useState();
+  const size = 5;
 
   const dispatch = useDispatch();
 
@@ -227,11 +236,30 @@ export const Home = () => {
     setBtn(new Array(totalPages).fill("btn"));
   }, [totalPages, dispatch]);
 
-  const searchCity = () => {
-    const t = pets.filter(
-      (el) => el.city.toLowerCase().indexOf(city.toLowerCase()) !== -1
-    );
-    setPetData([...t]);
+  useEffect(() => {
+    const getData = setTimeout(handleApiClls, 2000);
+
+    return () => clearTimeout(getData);
+  }, [city]);
+
+  const handleChange = (e) => {
+    setLoading(true);
+    setCity(e.target.value);
+    setClearShow(true);
+  };
+
+  const handleApiClls = () => {
+    fetch(`${API_URL}?search=${city}`)
+      .then((res) => res.json())
+      .then((res) => {
+        setPetData([...res.pets]);
+        console.log(res);
+        dispatch(
+          petsSuccessFun({ pets: res.pets, totalPages: res.totalPages })
+        );
+        setLoading(false);
+      })
+      .catch((error) => console.log(error));
   };
 
   const filterItemsV = () => {
@@ -276,30 +304,47 @@ export const Home = () => {
     setPetData([...t]);
   };
 
+  const clearHandle = () => {
+    dispatch(getPetsData(page, size, setLoading));
+    setClearShow(false);
+    setCity("");
+  };
+
+  const getId = (id) => {
+    setItenId(id);
+  };
+
   return (
     <Container>
-      <Navbar />
-      <Div>
+      <Div id="content_container">
         <div className="dog_img">
-          <img src={logo} alt="" />
+          <img src="logo.png" alt="" />
         </div>
         <h2 className="top-text">
-          Some Pet Boarding Locaton, Plans and All Details.
+          Pet Boarding Locaton, Plans and All Details.
         </h2>
         <div className="filter_sort">
           <div className="search-box">
             <p>
               <i className="bx bxs-search"></i> Search By :
+              {clearShow ? (
+                <span
+                  className="clear_all_btn"
+                  onClick={() => {
+                    clearHandle();
+                  }}
+                >
+                  Clear All
+                </span>
+              ) : null}
             </p>
             <input
               type="text"
               name=""
               id=""
+              value={city}
               placeholder="city..."
-              onChange={(e) => {
-                setCity(e.target.value);
-                searchCity();
-              }}
+              onChange={handleChange}
             />
           </div>
           <div className="filter">
@@ -307,8 +352,22 @@ export const Home = () => {
               <i className="bx bxs-filter-alt"></i> Filter By :
             </p>
             <div>
-              <button onClick={filterItemsV}>Verified</button>
-              <button onClick={filterCity}>City</button>
+              <button
+                onClick={() => {
+                  filterItemsV();
+                  setClearShow(true);
+                }}
+              >
+                Verified
+              </button>
+              <button
+                onClick={() => {
+                  filterCity();
+                  setClearShow(true);
+                }}
+              >
+                City
+              </button>
             </div>
           </div>
           <div className="sort">
@@ -316,122 +375,109 @@ export const Home = () => {
               <i className="bx bxs-sort-alt"></i> Sort By :
             </p>
             <div>
-              <button onClick={SortByCost}>Cost Per Day</button>
-              <button onClick={SortByRating}>Rating</button>
+              <button
+                onClick={() => {
+                  SortByCost();
+                  setClearShow(true);
+                }}
+              >
+                Cost
+              </button>
+              <button
+                onClick={() => {
+                  SortByRating();
+                  setClearShow(true);
+                }}
+              >
+                Rating
+              </button>
             </div>
           </div>
-          {/* <div>
-            <select name="" id="" onChange={() => {}}>
-              <option
-                onSelect={() => {
-                  //   filterByCost();
-                }}
-                value=""
-              >
-                Sort by Cost Ace
-              </option>
-              <option value="">Sort by Cost Dec</option>
-              <option
-                onSelect={() => {
-                  filterByRating();
-                }}
-                value=""
-              >
-                Sort by Rating Ace
-              </option>
-              <option value="">Sort by Rating Dec</option>
-            </select>
-          </div> */}
         </div>
 
-        <table>
-          <thead>
-            <tr>
-              <th>S.N.</th>
-              <th>Name</th>
-              <th>City</th>
-              <th>Address</th>
-              <th>Capacity</th>
-              <th>Cost Per Day</th>
-              <th>Verified</th>
-              <th>Rating</th>
-            </tr>
-          </thead>
-          {loading ? (
-            <tbody className="loading" style={{ height: `${height}px` }}>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td className="loading_img">
-                  <img src={loading_gif} alt="" />
-                </td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-            </tbody>
-          ) : (
-            <tbody>
-              {petData.map((e, index) => (
-                <TableRow
-                  key={e._id}
-                  id={e._id}
-                  sn={index + 1}
-                  name={e.name}
-                  city={e.city}
-                  address={e.address}
-                  capacity={e.capacity}
-                  cost_per_day={e.cost_per_day}
-                  verified={e.verified}
-                  rating={e.rating}
-                />
-              ))}
-            </tbody>
-          )}
-        </table>
+        <div className="table_container">
+          <div className="table">
+            <div className="thead">
+              <div className="main-head row">
+                <div className="th sn">S.N.</div>
+                <div className="th">Name</div>
+                <div className="th">City</div>
+                <div className="th">Address</div>
+                <div className="th">Capacity</div>
+                <div className="th">Cost Per Day</div>
+                <div className="th">Verified</div>
+                <div className="th">Rating</div>
+              </div>
+              <div className=""></div>
+            </div>
+
+            <Box className="tbody" sx={{ position: "relative" }}>
+              {!loading ? (
+                petData.length === 0 ? (
+                  <div>Not Found!</div>
+                ) : (
+                  petData.map((e, index) => (
+                    <TableRow
+                      key={e._id}
+                      id={e._id}
+                      sn={index + 1}
+                      name={e.name}
+                      city={e.city}
+                      address={e.address}
+                      capacity={e.capacity}
+                      cost_per_day={e.cost_per_day}
+                      verified={e.verified}
+                      rating={e.rating}
+                      page={page}
+                      setIsOpen={setIsOpen}
+                      setIsOpen2={setIsOpen2}
+                      getId={getId}
+                    />
+                  ))
+                )
+              ) : (
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <div className="loading_img td">
+                    <img src="assets/loading-gif.png" alt="" />
+                  </div>
+                </Box>
+              )}
+            </Box>
+          </div>
+        </div>
 
         <div className="pagination">
-          {page === 1 ? (
-            <button disabled>Prev</button>
-          ) : (
-            <button
-              className={isActive ? "active" : null}
-              onClick={() => {
-                setPage(page - 1);
-                setLoading(true);
-              }}
-            >
-              Prev
-            </button>
-          )}
+          <button
+            className={page === 1 ? "nextPrevBtn" : null}
+            onClick={() => {
+              setPage(page - 1);
+              setLoading(true);
+            }}
+          >
+            Prev
+          </button>
 
           {btn.map((e, index) => (
             <button
-              className={isActive ? "active" : null}
+              className={page - 1 === index ? "active" : null}
               onClick={() => {
                 setPage(index + 1);
                 setLoading(true);
-                console.log(page, loading);
               }}
             >
               {index + 1}
             </button>
           ))}
-          {page === totalPages ? (
-            <button disabled>Next</button>
-          ) : (
-            <button
-              className={isActive ? "active" : null}
-              onClick={() => {
-                setPage(page + 1);
-                setLoading(true);
-              }}
-            >
-              Next
-            </button>
-          )}
+
+          <button
+            className={page === totalPages ? "nextPrevBtn" : null}
+            onClick={() => {
+              setPage(page + 1);
+              setLoading(true);
+            }}
+          >
+            Next
+          </button>
         </div>
       </Div>
 
@@ -447,8 +493,8 @@ export const Home = () => {
         every culture and society, pet keeping apparently satisfies a deep,
         universal human need. <i className="bx bxs-quote-right quote_icon"></i>
       </div>
-
-      <Footer />
+      {isOpen && <Modal id={itemId} setIsOpen={setIsOpen} page={page} />}
+      {isOpen2 && <Modal2 id={itemId} setIsOpen2={setIsOpen2} page={page} />}
     </Container>
   );
 };

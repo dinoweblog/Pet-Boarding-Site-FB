@@ -11,23 +11,29 @@ const router = express.Router();
 router.get("", async (req, res) => {
   try {
     const page = +req.query.page || 1;
-    const size = +req.query.size || 3;
+    const size = +req.query.size || 5;
     let search = req.query.search;
 
     const skip = (page - 1) * size;
 
     let pets, totalPages;
     if (!search) {
-      pets = await Pet.find().skip(skip).limit(size).lean().exec();
+      pets = await Pet.find()
+        .skip(skip)
+        .sort({ updatedAt: -1 })
+        .limit(size)
+        .lean()
+        .exec();
 
       totalPages = Math.ceil((await Pet.find().countDocuments()) / size);
     } else {
-      pets = await Pet.find({ city: search })
+      pets = await Pet.find({ city: { $regex: search, $options: "i" } })
+        .sort({ updatedAt: -1 })
         .skip(skip)
         .limit(size)
         .lean()
         .exec();
-      totalPages = Math.ceil((await Pet.find().countDocuments()) / size);
+      totalPages = Math.ceil(pets.length / size);
     }
 
     return res.status(200).send({ pets, totalPages });
@@ -101,7 +107,7 @@ router.delete(
 );
 
 router.patch(
-  "/approval/:id",
+  "/status/:id",
   authenticate,
   authorise(["admin"]),
   async (req, res) => {
@@ -111,6 +117,8 @@ router.patch(
       })
         .lean()
         .exec();
+
+      if (pet) return res.status(400).send({ message: "Something went wrong" });
 
       return res.status(201).send(pet);
     } catch (err) {

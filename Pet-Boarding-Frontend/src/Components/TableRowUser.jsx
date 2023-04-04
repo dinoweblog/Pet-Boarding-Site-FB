@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
 
 const Tr = styled.tr``;
 
@@ -17,7 +16,6 @@ export const TableRowUser = ({
   color,
   approval_status,
 }) => {
-  const navigate = useNavigate();
   return (
     <Tr className="row">
       <td>{sn}</td>
@@ -29,7 +27,14 @@ export const TableRowUser = ({
       <td>{weight}</td>
       <td>{no_of_pets}</td>
       <td>{no_of_days}</td>
-      <td style={{ color: color, fontWeight: 600 }}>{approval_status}</td>
+      <td
+        style={{
+          color: approval_status === "Canceled" ? "red" : color,
+          fontWeight: 600,
+        }}
+      >
+        {approval_status}
+      </td>
     </Tr>
   );
 };

@@ -1,27 +1,20 @@
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { FaTrashAlt } from "react-icons/fa";
-import { useReducer, useState } from "react";
-import Modal from "./Modal";
-import Modal2 from "./Modal2";
-import {
-  getPetsData,
-  petsDeleteFun,
-  petsErrorFun,
-  petsLoadingFun,
-  petsSuccessFun,
-} from "../Redux/Pets/action";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
-const Tr = styled.tr`
-  :hover {
-    background-color: #f2f2f2;
-    cursor: pointer;
+const Div = styled.div`
+  display: flex;
+  border-bottom: 1px solid #dddddd;
+  .row-hover {
+    :hover {
+      background-color: #f2f2f2;
+      cursor: pointer;
+    }
   }
-`;
-
-const Span = styled.span`
-  position: absolute;
+  .visit {
+    padding: 20px 0;
+    color: green;
+  }
 `;
 
 export const TableRow = ({
@@ -34,65 +27,52 @@ export const TableRow = ({
   cost_per_day,
   verified,
   rating,
+  getId,
+  setIsOpen,
+  setIsOpen2,
 }) => {
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false);
-  const [isOpen2, setIsOpen2] = useState(false);
-  const { pets } = useSelector((state) => state.pets);
-  const { token, isAuthenticated, roles } = useSelector((state) => state.login);
-  const dispatch = useDispatch();
-
-  // Delete and Edit network request
-  const deleteData = () => {
-    dispatch(petsLoadingFun());
-    fetch(`https://pet-boarding-server.herokuapp.com/listing/delete/${id}`, {
-      method: "DELETE",
-      // body: JSON.stringify(dataDetails),
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        dispatch(getPetsData());
-      })
-      .catch((error) => dispatch(petsErrorFun()));
-  };
+  const { token, roles } = useSelector((state) => state.login);
 
   return (
-    <>
-      <Tr
-        className="row"
+    <Div>
+      <div
+        className="row row-hover"
         onClick={() => {
           navigate(`/listing/${id}`);
         }}
       >
-        <td>{sn}</td>
-        <td>{name}</td>
-        <td>{city}</td>
-        <td>{address}</td>
-        <td>{capacity}</td>
-        <td>{cost_per_day}</td>
-        <td>{verified}</td>
-        <td>{rating}</td>
-      </Tr>
-      {token != "" && roles[0] === "admin" ? (
-        <td className="icons">
+        <div className="td sn">{sn}</div>
+        <div className="td">{name}</div>
+        <div className="td">{city}</div>
+        <div className="td">{address}</div>
+        <div className="td">{capacity}</div>
+        <div className="td">{cost_per_day}</div>
+        <div className="td">{verified}</div>
+        <div className="td">{rating}</div>
+      </div>
+      {token != "" && roles === "admin" ? (
+        <div className="icons">
           <i
             className="bx bxs-trash-alt delete"
-            onClick={() => setIsOpen(true)}
+            onClick={() => {
+              getId(id);
+              setIsOpen(true);
+            }}
           ></i>
           <i
             className="bx bxs-edit-alt edit"
-            onClick={() => setIsOpen2(true)}
+            onClick={() => {
+              getId(id);
+              setIsOpen2(true);
+            }}
           ></i>
-          {isOpen && <Modal deleteData={deleteData} setIsOpen={setIsOpen} />}
-          {isOpen2 && <Modal2 id={id} setIsOpen2={setIsOpen2} />}
-        </td>
-      ) : null}
-      {/* <button onClick={() => setIsOpen(true)}>Open Modal</button>
-      {isOpen && <Modal setIsOpen={setIsOpen} />} */}
-    </>
+        </div>
+      ) : (
+        <div className="visit">
+          <i class="bx bx-chevrons-right"></i>
+        </div>
+      )}
+    </Div>
   );
 };

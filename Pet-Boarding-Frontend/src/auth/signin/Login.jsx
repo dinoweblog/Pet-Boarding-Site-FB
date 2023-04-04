@@ -1,33 +1,32 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { loginAuthenticated, loginSuccess } from "../../Redux/Login/action";
+import { API_URL } from "../../api";
 import {
-  loginAuthenticated,
-  loginError,
-  loginLoading,
-  loginSuccess,
-} from "../Redux/Login/action";
-import { Footer } from "./Footer";
-import { Navbar } from "./Navbar";
-import cat from "../images/logo.png";
+  showErrorNotification,
+  showSuccessNotification,
+} from "../../notification/Notification";
 
-const MainDiv = styled.div``;
 const H1 = styled.h1`
   text-align: center;
+  margin-top: 2%;
 `;
+const MainDiv = styled.div`
+  .footer {
+    margin-top: 25%;
+  }
+`;
+
 const Img = styled.img`
   position: absolute;
-  top: 17%;
+  top: 18%;
   right: 34%;
   transform: scaleX(-1);
   width: 8%;
 `;
-const Nav = styled.div`
-  .nav {
-    border-bottom: 1px solid gray;
-  }
-`;
+
 const Div = styled.div`
   width: 30%;
   margin: auto;
@@ -36,18 +35,18 @@ const Div = styled.div`
   gap: 25px;
   background-color: white;
   box-sizing: border-box;
-  padding: 2%;
+  padding: 40px;
   border-radius: 8px;
   margin-top: 30px;
-  margin-bottom: 19%;
-  input {
-    height: 33px;
+  input,
+  select {
+    height: 40px;
     padding-left: 15px;
     outline: none;
     border: 1px solid #dddddd;
   }
   button {
-    height: 38px;
+    height: 45px;
     border: none;
     background-color: #a85cf9;
     color: white;
@@ -61,6 +60,7 @@ const Div = styled.div`
 export const Login = () => {
   const [email, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleSubmit = () => {
@@ -68,9 +68,8 @@ export const Login = () => {
       email,
       password,
     };
-
-    dispatch(loginLoading());
-    fetch(`https://pet-boarding-server.herokuapp.com/login`, {
+    setLoading(true);
+    fetch(`${API_URL}/login`, {
       method: "POST",
       body: JSON.stringify(userDetails),
       headers: {
@@ -78,35 +77,43 @@ export const Login = () => {
       },
     })
       .then((res) => res.json())
+
       .then((res) => {
-        dispatch(
-          loginSuccess({
-            token: res.token,
-            roles: res.user.roles,
-            user: res.user,
-            userId: res.user._id,
-          })
-        );
-        dispatch(loginAuthenticated("true"));
-        navigate("/");
-        if (res.token != undefined) {
+        setLoading(false);
+        if (res.message) {
+          showErrorNotification(`${res.message}`);
+        } else {
+          showSuccessNotification(`Welcome ${res.user.name}`);
+          dispatch(
+            loginSuccess({
+              token: res.token,
+              roles: res.user.roles[0],
+              user: res.user,
+              userId: res.user._id,
+            })
+          );
           dispatch(loginAuthenticated("true"));
           navigate("/");
-        } else {
-          dispatch(loginAuthenticated("false"));
-          navigate("/");
+          if (res.token != undefined) {
+            dispatch(loginAuthenticated("true"));
+            navigate("/");
+          } else {
+            dispatch(loginAuthenticated("false"));
+            navigate("/");
+          }
         }
       })
-      .catch((error) => dispatch(loginError()));
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+        showErrorNotification(err.message);
+      });
   };
 
   return (
     <MainDiv>
-      <Nav>
-        <Navbar />
-      </Nav>
       <H1>Login</H1>
-      <Img className="dog_img" src={cat} alt="" />
+      <Img className="dog_img" src="logo.png" alt="" />
       <Div>
         <input
           type="text"
@@ -126,10 +133,9 @@ export const Login = () => {
             handleSubmit();
           }}
         >
-          Login
+          {loading ? `Login...` : `Login`}
         </button>
       </Div>
-      <Footer />
     </MainDiv>
   );
 };
