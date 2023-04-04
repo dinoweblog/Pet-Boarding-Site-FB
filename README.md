@@ -51,11 +51,13 @@
 ---
 - **Sign-Up Sign-In Page**
 ---
-![register](https://user-images.githubusercontent.com/93374756/165639435-6b19d3a2-8be7-4d2c-9568-f19b4032c13e.png)
+
+![signup](https://user-images.githubusercontent.com/93374756/229695241-54f31d51-8966-41e0-b79a-caeb1914ec37.png)
+
 
 ---
 
-![login](https://user-images.githubusercontent.com/93374756/165639479-e9b59a74-bee8-4701-86dd-d66270cc97fb.png)
+![signin](https://user-images.githubusercontent.com/93374756/229695234-6611256b-5b5d-46d8-8598-05145baa2682.png)
 
 
 ---
